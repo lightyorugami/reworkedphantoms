@@ -1,10 +1,10 @@
 modLoader="javafml"
-loaderVersion="[43,48)"
+loaderVersion="[45,48)"
 license="GPLv3"
 
 [[mods]]
 modId="reworkedphantoms"
-version="1.2.2"
+version="1.2.4"
 displayName="Reworked Phantoms"
 authors="lightyorugami"
 description="No more insomnia triggers, phantoms are now only rebalanced full moon threats!"
@@ -12,6 +12,6 @@ description="No more insomnia triggers, phantoms are now only rebalanced full mo
 [[dependencies.reworkedphantoms]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.19.2,1.20.2)"
+versionRange="[1.19.4,1.20.2)"
 ordering="AFTER"
 side="BOTH"

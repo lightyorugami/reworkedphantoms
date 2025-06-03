@@ -23,7 +23,7 @@ import java.util.*;
 public class PhantomSpawnHandler {
 
     private static final double SPAWN_CHANCE = 1.0;
-    private static final int RESPAWN_DELAY_TICKS = 200; // 20 tics per seconds
+    private static final int RESPAWN_DELAY_TICKS = 200;
     private static final Set<UUID> processedPlayers = new HashSet<>();
     private static final Set<UUID> playersWithSalve = new HashSet<>();
     private static final Map<UUID, RespawnTracker> respawnTrackers = new HashMap<>();
@@ -46,6 +46,7 @@ public class PhantomSpawnHandler {
         if (
             currentTick == 18000L &&
             level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) &&
+            level.getGameRules().getBoolean(ReworkedPhantomsMod.DO_PHANTOM_SPAWNING) &&
             level.getDifficulty() != Difficulty.PEACEFUL &&
             level.dimensionType().hasSkyLight() &&
             level.isNight() &&
@@ -57,7 +58,6 @@ public class PhantomSpawnHandler {
                 processedPlayers.add(uuid);
 
                 if (playersWithSalve.contains(uuid)) continue;
-                if (player.isCreative()) continue;
 
                 BlockPos pos = player.blockPosition();
                 if (
@@ -75,8 +75,6 @@ public class PhantomSpawnHandler {
 
         if (currentTick > 18000L && currentTick <= 23000L) {
             for (ServerPlayer player : level.players()) {
-                if (player.isCreative()) continue;
-
                 UUID uuid = player.getUUID();
                 RespawnTracker tracker = respawnTrackers.get(uuid);
                 if (tracker == null) continue;
@@ -88,9 +86,14 @@ public class PhantomSpawnHandler {
                     if (tracker.phantomsDeathTick == -1L) {
                         tracker.phantomsDeathTick = level.getDayTime();
                     } else if (level.getDayTime() - tracker.phantomsDeathTick >= RESPAWN_DELAY_TICKS) {
-                        List<UUID> newSpawned = trySpawnPhantomGroup(player, level);
-                        tracker.spawnedPhantoms = newSpawned;
-                        tracker.phantomsDeathTick = -1L;
+                        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) &&
+                            level.getGameRules().getBoolean(ReworkedPhantomsMod.DO_PHANTOM_SPAWNING)) {
+                            List<UUID> newSpawned = trySpawnPhantomGroup(player, level);
+                            tracker.spawnedPhantoms = newSpawned;
+                            tracker.phantomsDeathTick = -1L;
+                        } else {
+                            respawnTrackers.remove(uuid);
+                        }
                     }
                 }
             }

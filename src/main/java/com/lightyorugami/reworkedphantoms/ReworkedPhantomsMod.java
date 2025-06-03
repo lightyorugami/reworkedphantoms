@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 public class ReworkedPhantomsMod {
     public static final String MODID = "reworkedphantoms";
     public static final Logger LOGGER = LogUtils.getLogger();
+    
+    public static final GameRules.Key<GameRules.BooleanValue> DO_PHANTOM_SPAWNING = 
+        GameRules.register("doPhantomSpawning", GameRules.Category.SPAWNING, GameRules.BooleanValue.create(true));
 
     public ReworkedPhantomsMod() {
         LOGGER.info("Reworked Phantoms Mod loaded!");
@@ -26,6 +29,8 @@ public class ReworkedPhantomsMod {
             for (ServerLevel level : server.getAllLevels()) {
                 level.getGameRules().getRule(GameRules.RULE_DOINSOMNIA).set(false, server);
                 LOGGER.info("doInsomnia has been set to false in level: " + level.dimension().location());
+                LOGGER.info("doPhantomSpawning gamerule initialized to: " + 
+                    level.getGameRules().getBoolean(DO_PHANTOM_SPAWNING));
             }
         }
     }
