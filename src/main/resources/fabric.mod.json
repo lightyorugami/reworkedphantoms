@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "reworkedphantoms",
+  "version": "${version}",
+  "name": "Reworked Phantoms",
+  "description": "No more insomnia triggers, phantoms are now only rebalanced full moon threats!",
+  "authors": ["lightyorugami"],
+  "contact": {
+    "sources": "https://github.com/lightyorugami/reworkedphantoms",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/reworked-phantoms",
+    "issues": "https://github.com/lightyorugami/reworkedphantoms/issues"
+  },
+  "icon": "assets/reworkedphantoms/reworkedphantoms.png",
+  "license": "GPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.lightyorugami.reworkedphantoms.ReworkedPhantomsMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.15.10",
+    "minecraft": ">=1.21.5 <1.21.6"
+  }
+}
