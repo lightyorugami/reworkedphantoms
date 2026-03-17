@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="GPLv3"
+
+[[mods]]
+modId="reworkedphantoms"
+version="1.2.5"
+displayName="Reworked Phantoms"
+displayURL="https://github.com/lightyorugami/reworkedphantoms"
+logoFile="reworkedphantoms.png"
+authors="lightyorugami"
+
+description='''
+No more insomnia triggers, phantoms are now only rebalanced full moon threats!
+'''
+
+[[dependencies.reworkedphantoms]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.reworkedphantoms]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.6,1.21.9)"
+ordering="NONE"
+side="BOTH"
