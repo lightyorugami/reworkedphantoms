@@ -1,61 +1,110 @@
 plugins {
-	id 'fabric-loom' version '1.2.8'
-	id 'maven-publish'
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.1.20'
 }
 
-version = project.mod_version
-group = project.maven_group
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = '1.2.5'
+group = 'com.lightyorugami.reworkedphantoms'
 
 repositories {
 }
 
+base {
+    archivesName = 'reworkedphantoms'
+}
+
+// Mojang ships Java 21 to end users in 1.21.5, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+runs {
+    configureEach {
+
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource project.sourceSets.main
+    }
+
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', 'reworkedphantoms'
+    }
+
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', 'reworkedphantoms'
+        argument '--nogui'
+    }
+
+    gameTestServer {
+        systemProperty 'neoforge.enabledGameTestNamespaces', 'reworkedphantoms'
+    }
+
+    clientData {
+
+        arguments.addAll '--mod',
+                'reworkedphantoms',
+                '--all',
+                '--output', file('src/generated/resources/').getAbsolutePath(),
+                '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
 
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.neoforged:neoforge:${neo_version}"
 
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-
-	modImplementation "net.fabricmc:fabric-loader:${project.fabricloader_version}"
-
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
 }
 
-base {
-	archivesName = project.archives_base_name
-}
+tasks.withType(ProcessResources).configureEach {
 
-processResources {
-	inputs.property "version", project.version
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : 'reworkedphantoms',
+            mod_name               : 'Reworked Phantoms',
+            mod_license            : 'GPLv3',
+            mod_version            : '1.2.4'
+    ]
 
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
+    inputs.properties replaceProperties
 
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
-}
-
-java {
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${base.archivesName.get()}" }
-	}
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
 
-	repositories {
-	}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }
