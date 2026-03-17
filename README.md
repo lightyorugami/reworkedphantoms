@@ -18,4 +18,4 @@ This mod gives phantoms a clearer, more meaningful role. Gone are the days of in
 **A:** Yes! This mod works perfectly fine on pre-existing worlds.
 
 **Q: Do phantoms spawn in Creative Mode?**                         
-**A:** Yes, phantoms can spawn in Creative Mode just like in vanilla Minecraft. If needed, you can disable phantom spawning entirely using the `doPhantomSpawning` gamerule (or config file in versions 1.19.2–1.19.3).
+**A:** Yes, phantoms can spawn in Creative Mode just like in vanilla Minecraft. If needed, you can disable phantom spawning entirely using the `doPhantomSpawning` gamerule (or via the config file in Forge versions 1.19.3 and earlier).
