@@ -1,111 +1,61 @@
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+	id 'fabric-loom' version '1.2.8'
+	id 'maven-publish'
 }
 
-version = '1.2.4'
-archivesBaseName = 'reworkedphantoms'
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-minecraft {
-    mappings channel: 'official', version: '1.20.1'
-
-    copyIdeResources = true
-
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                reworkedphantoms {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', 'reworkedphantoms'
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', 'reworkedphantoms'
-            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', 'reworkedphantoms'
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', 'reworkedphantoms', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
-    }
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+version = project.mod_version
+group = project.maven_group
 
 repositories {
-    mavenCentral()
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.20.1-47.2.0"
+
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+	modImplementation "net.fabricmc:fabric-loader:${project.fabricloader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
 }
 
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: "1.20.1",
-            forge_version: "47.2.0",
-            minecraft_version_range: "[1.20.1,1.21)",
-            forge_version_range: "[47.2.0,)",
-            loader_version_range: "[1,)",
-            mod_id: "reworkedphantoms",
-            mod_name: "Reworked Phantoms",
-            mod_license: "MIT",
-            mod_version: "1.0.0",
-            mod_authors: "Light",
-            mod_description: "Phantoms now only spawn on full moon if the player has acquired hardware. Insomnia-based spawns are disabled."
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+base {
+	archivesName = project.archives_base_name
 }
 
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : 'reworkedphantoms',
-                'Specification-Vendor'    : 'Light',
-                'Specification-Version'   : '1',
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : archiveVersion,
-                'Implementation-Vendor'   : 'Light',
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-    finalizedBy 'reobfJar'
-}
+processResources {
+	inputs.property "version", project.version
 
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${base.archivesName.get()}" }
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+
+	repositories {
+	}
 }
